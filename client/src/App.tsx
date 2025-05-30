@@ -21,8 +21,38 @@ export default function App() {
     setSelectedBook(theBook);
   }
 
-  function handleReview(review: string) {
-    console.log(review);
+  async function handleNextBook() {
+    const res = await fetch("http://localhost:3000/findNewBook", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: "user001",
+      }),
+    });
+    if (!res.ok) {
+      console.error("Failed to search for next book");
+      return;
+    }
+  }
+
+  async function handleReview(review: string) {
+    const res = await fetch("http://localhost:3000/addReview", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        book: selectedBook,
+        review: review,
+        rating: 5,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Failed to submit review");
+      return;
+    }
   }
 
   async function fetchData() {
@@ -114,21 +144,40 @@ export default function App() {
     }
   }
 
+  async function handleCompareBook(theBook: Book) {
+    const res = await fetch("http://localhost:3000/compareBook", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        book: theBook,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Failed to submit review");
+      return;
+    }
+  }
+
   return (
     <main className="p-6 max-w-6xl mx-auto space-y-6">
       <h1 className="text-2xl font-semibold">My Book Agent</h1>
-      <div className="flex w-full max-w-sm items-center space-x-2">
-        <Input
-          type="text"
-          placeholder="Boktitle"
-          value={bookSearch}
-          onChange={(e) => {
-            setBookSearch(e.target.value);
-          }}
-        />
-        <Button type="submit" onClick={searchBookOnline}>
-          Sök
-        </Button>
+      <div className="flex w-full justify-between items-center space-x-2">
+        <div className="flex items-center space-x-2">
+          <Input
+            type="text"
+            placeholder="Boktitle"
+            value={bookSearch}
+            onChange={(e) => {
+              setBookSearch(e.target.value);
+            }}
+          />
+          <Button type="submit" onClick={searchBookOnline}>
+            Sök
+          </Button>
+        </div>
+        <Button onClick={handleNextBook}>Hitta min nästa bok!</Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {bookTitles.map((book, index) => (
@@ -136,6 +185,9 @@ export default function App() {
             book={book}
             onSelectClick={() => {
               handleSelectedBook(book);
+            }}
+            onCompareClick={() => {
+              handleCompareBook(book);
             }}
             key={index}
           />

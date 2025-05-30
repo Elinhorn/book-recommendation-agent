@@ -7,9 +7,14 @@ import { BookOpenText } from "lucide-react";
 interface BookCardProps {
   book: Book;
   onSelectClick?: () => void;
+  onCompareClick?: () => void;
 }
 
-export function BookCard({ book, onSelectClick }: BookCardProps) {
+export function BookCard({
+  book,
+  onSelectClick,
+  onCompareClick,
+}: BookCardProps) {
   return (
     <Card className="flex-col justify-between py-0">
       <div className="aspect-[2/3] relative">
@@ -42,14 +47,22 @@ export function BookCard({ book, onSelectClick }: BookCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="flex flex-col p-4 pt-0">
         <Button
           variant="default"
           size="sm"
           className="w-full"
           onClick={onSelectClick}
         >
-          Review
+          Recensera
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full mt-2"
+          onClick={onCompareClick}
+        >
+          Passar denna mig?
         </Button>
       </CardFooter>
     </Card>
