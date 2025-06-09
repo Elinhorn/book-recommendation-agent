@@ -21,7 +21,7 @@ export function BookCard({
         <img
           src={
             book.image?.thumbnail ||
-            "https://via.placeholder.com/200x300?text=No+Cover"
+            "https://placehold.co/200x300?text=No+Cover"
           }
           alt={`Cover of ${book.title}`}
           className="object-cover w-full h-full rounded-t"

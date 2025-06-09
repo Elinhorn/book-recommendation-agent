@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
-import type { Book } from "./types/types";
+import type { Book, ComparedBooks } from "./types/types";
 import { BookCard } from "./components/BookCard";
 import { BookReviewCard } from "./components/BookCardReview";
+import CompareBook from "./components/CompareBook";
+import FindBook from "./components/FindBook";
 
 export default function App() {
   const [bookSearch, setBookSearch] = useState<string>("");
   const [bookReview, setBookReview] = useState<string>("");
   const [bookTitles, setBookTitles] = useState<Book[]>([]);
+  const [comparedBook, setComparedBook] = useState<ComparedBooks | undefined>();
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [bookPredictions, setBookPredictions] = useState<Book[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [nextBookOpen, setNextBookOpen] = useState<boolean>(false);
+  const [bookSummary, setBookSummary] = useState<string | undefined>(undefined);
 
   const MAX_RESULTS = "5";
   const PRINT_TYPE = "books";
@@ -21,23 +28,32 @@ export default function App() {
     setSelectedBook(theBook);
   }
 
+  function handleCloseDialog() {
+    setDialogOpen(false);
+    setNextBookOpen(false);
+  }
+
   async function handleNextBook() {
+    setLoading(true);
+    setNextBookOpen(true);
     const res = await fetch("http://localhost:3000/findNewBook", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        userId: "user001",
-      }),
     });
     if (!res.ok) {
       console.error("Failed to search for next book");
       return;
     }
+    const data = await res.json();
+    console.log("Next book data:", data);
+    setBookSummary(data.summary);
+    setBookTitles(data.books);
+    setLoading(false);
   }
 
-  async function handleReview(review: string) {
+  async function handleReview(review: string, rate: number) {
     const res = await fetch("http://localhost:3000/addReview", {
       method: "POST",
       headers: {
@@ -46,13 +62,14 @@ export default function App() {
       body: JSON.stringify({
         book: selectedBook,
         review: review,
-        rating: 5,
+        rating: rate,
       }),
     });
     if (!res.ok) {
       console.error("Failed to submit review");
       return;
     }
+    setSelectedBook(null);
   }
 
   async function fetchData() {
@@ -145,6 +162,8 @@ export default function App() {
   }
 
   async function handleCompareBook(theBook: Book) {
+    setLoading(true);
+    setDialogOpen(true);
     const res = await fetch("http://localhost:3000/compareBook", {
       method: "POST",
       headers: {
@@ -154,6 +173,10 @@ export default function App() {
         book: theBook,
       }),
     });
+    const data = await res.json();
+    console.log("Comparison result:", data);
+    setComparedBook({ ...data, newBook: theBook } as ComparedBooks);
+    setLoading(false);
     if (!res.ok) {
       console.error("Failed to submit review");
       return;
@@ -179,6 +202,21 @@ export default function App() {
         </div>
         <Button onClick={handleNextBook}>Hitta min nästa bok!</Button>
       </div>
+
+      <CompareBook
+        isOpen={dialogOpen}
+        handleClose={handleCloseDialog}
+        isLoading={loading}
+        books={comparedBook}
+      />
+
+      <FindBook
+        isOpen={nextBookOpen}
+        handleClose={handleCloseDialog}
+        summary={bookSummary}
+        isLoading={loading}
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {bookTitles.map((book, index) => (
           <BookCard

@@ -10,3 +10,15 @@ export type Book = {
   };
   infoLink: string;
 };
+
+export type ComparedBooks = {
+  answer: string;
+  match: {
+    description: string;
+    description_embedding: number[];
+    id: string;
+    similarity?: number;
+    title: string;
+  };
+  newBook: Book;
+};

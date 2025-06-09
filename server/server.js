@@ -3,7 +3,11 @@ import path from "path";
 import cors from "cors";
 import { fileURLToPath } from "url";
 import { generateEmbedding } from "./helpers/generate-embeddings.js";
-import { storeBookReview } from "./helpers/supabase.js";
+import { fetchAllBooksWithEmbeddings, storeBookReview } from "./helpers/supabase.js";
+import { getTopSimilarBooks } from "./helpers/calculations.js";
+import { generateLLMInterpretation } from "./helpers/llm.js";
+import { run } from '@openai/agents';
+import { agent } from "./helpers/agent.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); //????
 
 app.post("/addReview", async (req, res) => {
   const { book, review, rating } = req.body;
@@ -48,16 +52,22 @@ app.post("/compareBook", async (req, res) => {
   }
 
   try {
-    //const new_description_embedding = await generateEmbedding(book.description);
+    const newDescriptionEmbedding = await generateEmbedding(book.description);
 
-    // Step 1: Embed the new book's description
-    // Step 2: Retrieve all stored books descriptions/reviews with embeddings from Supabase
-    // Step 3: Compare using cosine similarity
-    // Step 4: Sort by similarity
-    // Step 5: Ask an LLM to interpret the similarity
+    const storedBooks = await fetchAllBooksWithEmbeddings();
+    const topMatches = getTopSimilarBooks(newDescriptionEmbedding, storedBooks, 3);
 
-    res.json({ ok: true });
-    console.log('new bok description')
+    console.log('new book: ', book)
+    console.log('new book: ', topMatches)
+
+    //could add review for my book
+    //if books are not similar, maybe search for other book!?
+    const llmComparison = await generateLLMInterpretation(book, topMatches[0])
+
+    res.json({
+        match: topMatches[0],
+        answer: llmComparison,
+    });
   } catch (err) {
     console.error("Error:", err);
     res.status(500).json({ error: "Failed to process review." });
@@ -65,12 +75,7 @@ app.post("/compareBook", async (req, res) => {
 });
 
 app.post("/findNewBook", async (req, res) => {
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: "Description is required" });
-  }
-
+  
   try {
 
     // Step 1: Get all user book reviews from superbase
@@ -78,11 +83,19 @@ app.post("/findNewBook", async (req, res) => {
     // Step 3: LLM search on google book api based on what user would like
     // Step 4: Retrives 3 books with explanintion why user would like the book
 
-    res.json({ ok: true });
-    console.log('new magic ai search')
+    const result = await run(
+    agent,
+    'Get users book reviews and find new books based on their preferences.',
+    )
+
+    //add llm interpretation of the books
+
+    const output = result.finalOutput; // this contains your { books: [...] }
+
+    res.json(output);
   } catch (err) {
-    console.error("Error:", err);
-    res.status(500).json({ error: "Failed to process review." });
+    console.error(err);
+    res.status(500).json({ error: 'Agent run failed.' });
   }
 });
 

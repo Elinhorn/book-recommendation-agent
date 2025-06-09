@@ -5,20 +5,30 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Book } from "@/types/types";
 import { BookOpenText } from "lucide-react";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BookReviewCardProps {
   book: Book;
-  onSubmitReview?: (review: string) => void;
+  onSubmitReview?: (review: string, rate: number) => void;
 }
 
 export function BookReviewCard({ book, onSubmitReview }: BookReviewCardProps) {
   const [review, setReview] = useState("");
+  const [rate, setRate] = useState("0");
 
   function handleSubmit() {
     if (onSubmitReview) {
-      onSubmitReview(review);
+      onSubmitReview(review, Number(rate));
       setReview("");
+      setRate("0");
     }
+    console.log("Review submitted:", review, "Rating:", rate);
   }
 
   return (
@@ -64,6 +74,25 @@ export function BookReviewCard({ book, onSubmitReview }: BookReviewCardProps) {
           onChange={(e) => setReview(e.target.value)}
         />
         <CardFooter className="p-0 pt-4">
+          <Select
+            value={rate.toString()}
+            onValueChange={(value) => setRate(value)}
+            defaultValue={rate.toString()}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Betyg" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0" disabled>
+                Betyg
+              </SelectItem>
+              <SelectItem value="1">1</SelectItem>
+              <SelectItem value="2">2</SelectItem>
+              <SelectItem value="3">3</SelectItem>
+              <SelectItem value="4">4</SelectItem>
+              <SelectItem value="5">5</SelectItem>
+            </SelectContent>
+          </Select>
           <Button onClick={handleSubmit} className="ml-auto">
             Submit Review
           </Button>
