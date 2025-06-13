@@ -111,5 +111,5 @@ npm run dev
   - `supabase.js:` Interacts with the Supabase database for CRUD operations.
   - `calculations.js:` Contains logic for cosine similarity and semantic search.
   - `llm.js:` Functions for LLM-based book comparisons.
-  - agent.js:` Defines the AI agent and its integrated tools.
+  - `agent.js:` Defines the AI agent and its integrated tools.
 - `client/:` The source code for the frontend application.
