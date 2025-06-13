@@ -33,3 +33,32 @@ Follow these steps to set up and run the application locally.
 - Supabase account and a new project
 - OpenAI API Key
 - Google Books API Key (optional, but recommended for the agent)
+
+1. Clone repo
+2. Create a .env file _(see example in repo)_
+3. Supabase Configuration
+
+- Log in to your Supabase account.
+
+- Create a new table named book_reviews.
+
+- Configure the table schema with the following columns:
+
+  | Column                | Type         | Description                              |
+  | :-------------------- | :----------- | :--------------------------------------- |
+  | id                    | uuid         | Primary key, default: uuid_generate_v4() |
+  | title                 | text         | Book title                               |
+  | authors               | jsonb        | Authors (array of strings)               |
+  | categories            | jsonb        | Categories (array of strings)            |
+  | page_count            | int4         | Number of pages                          |
+  | description           | text         | Book description                         |
+  | description_embedding | vector(1536) | Embedding of the book's description      |
+  | image_small_thumbnail | text         | URL for small cover thumbnail            |
+  | image_thumbnail       | text         | URL for large cover thumbnail            |
+  | info_link             | text         | Link to book information                 |
+  | rating                | int4         | User's rating (1-5)                      |
+  | review                | text         | User's review text                       |
+  | review_embedding      | vector(1536) | Embedding of the user's review           |
+  | created_at            | timestamptz  | Default: now()                           |
+
+- Enable the pgvector extension in your Supabase database.
