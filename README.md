@@ -105,11 +105,11 @@ npm run dev
 
 #### Code Structure
 
-`server.js:` The main server file, defining API endpoints and orchestrating AI functionalities.
-`helpers/:` Directory containing helper modules for:
-`generate-embeddings.js:` Handles text embedding generation.
-`supabase.js:` Interacts with the Supabase database for CRUD operations.
-`calculations.js:` Contains logic for cosine similarity and semantic search.
-`llm.js:` Functions for LLM-based book comparisons.
-`agent.js:` Defines the AI agent and its integrated tools.
-`client/:` The source code for the frontend application.
+- `server.js:` The main server file, defining API endpoints and orchestrating AI functionalities.
+- `helpers/:` Directory containing helper modules for:
+  - `generate-embeddings.js:` Handles text embedding generation.
+  - `supabase.js:` Interacts with the Supabase database for CRUD operations.
+  - `calculations.js:` Contains logic for cosine similarity and semantic search.
+  - `llm.js:` Functions for LLM-based book comparisons.
+  - agent.js:` Defines the AI agent and its integrated tools.
+- `client/:` The source code for the frontend application.
