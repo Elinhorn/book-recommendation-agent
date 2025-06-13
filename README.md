@@ -1,6 +1,4 @@
-# book-recommendation-agent
-
-## AI-Powered Book Recommendation System
+# AI-Powered Book Recommendation System
 
 This project implements an AI-driven web application for personalized book recommendations and semantic book search. The application leverages embeddings to understand book descriptions and reviews, and an AI agent to generate relevant book suggestions based on a user's reading history.
 
