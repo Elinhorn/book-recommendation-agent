@@ -15,20 +15,28 @@ import {
 
 interface BookReviewCardProps {
   book: Book;
-  onSubmitReview?: (review: string, rate: number) => void;
+  onSubmitReview: (review: string, rate: number) => void;
+  onCancel: () => void;
 }
 
-export function BookReviewCard({ book, onSubmitReview }: BookReviewCardProps) {
-  const [review, setReview] = useState("");
-  const [rate, setRate] = useState("0");
+export function BookReviewCard({
+  book,
+  onSubmitReview,
+  onCancel,
+}: BookReviewCardProps) {
+  const [review, setReview] = useState(book.review ?? "");
+  const [rate, setRate] = useState(book.rating?.toString() ?? "0");
 
   function handleSubmit() {
-    if (onSubmitReview) {
+    if (review.trim() !== "") {
       onSubmitReview(review, Number(rate));
       setReview("");
       setRate("0");
     }
-    console.log("Review submitted:", review, "Rating:", rate);
+  }
+
+  function handleCancel() {
+    onCancel();
   }
 
   return (
@@ -73,7 +81,7 @@ export function BookReviewCard({ book, onSubmitReview }: BookReviewCardProps) {
           value={review}
           onChange={(e) => setReview(e.target.value)}
         />
-        <CardFooter className="p-0 pt-4">
+        <CardFooter className="p-0 pt-4 justify-between">
           <Select
             value={rate.toString()}
             onValueChange={(value) => setRate(value)}
@@ -93,9 +101,18 @@ export function BookReviewCard({ book, onSubmitReview }: BookReviewCardProps) {
               <SelectItem value="5">5</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={handleSubmit} className="ml-auto">
-            Submit Review
-          </Button>
+          <div>
+            <Button
+              onClick={handleCancel}
+              variant={"outline"}
+              className="ml-auto mr-5"
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit} className="ml-auto">
+              Submit Review
+            </Button>
+          </div>
         </CardFooter>
       </div>
     </Card>

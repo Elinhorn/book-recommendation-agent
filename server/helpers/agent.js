@@ -1,7 +1,6 @@
-import { Agent, tool } from '@openai/agents';
-import { z } from 'zod';
-import { fetchAllBooksFromDatabase } from './supabase.js';
-import { generateSummaryOfBooks } from './llm.js';
+import { Agent, tool } from "@openai/agents";
+import { z } from "zod";
+import { fetchAllBooksFromDatabase } from "./supabase.js";
 
 const BookType = z.object({
   title: z.string(),
@@ -10,7 +9,6 @@ const BookType = z.object({
   pageCount: z.number(),
   description: z.string(),
   image: z.object({
-    // required, but can be empty string or null
     smallThumbnail: z.union([z.string(), z.null()]),
     thumbnail: z.union([z.string(), z.null()]),
   }),
@@ -19,20 +17,19 @@ const BookType = z.object({
   rating: z.union([z.number(), z.null()]),
 });
 
-
 const BooksResponse = z.object({
   books: z.array(BookType),
   summary: z.string(),
 });
 
 const searchBookApi = tool({
-  name: 'search_book_api',
-  description: 'Search Google Books API by category.',
-  parameters: z.object({ category: z.string() }),
-  async execute({ category }) {
-    console.log('Searching for books in category:', category);
-    const query = encodeURIComponent(category);
-    const url = `https://www.googleapis.com/books/v1/volumes?q=subject:${query}&maxResults=3`;
+  name: "search_book_api",
+  description: "Search Google Books API by query.",
+  parameters: z.object({ query: z.string() }),
+  async execute({ query }) {
+    console.log("Searching for books in:", query);
+    const urlQuery = encodeURIComponent(query);
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${urlQuery}&maxResults=3`;
 
     const response = await fetch(url);
     const data = await response.json();
@@ -43,20 +40,19 @@ const searchBookApi = tool({
       };
     }
 
-    const books = data.items.map(item => ({
-        title: item.volumeInfo.title || 'No title',
-        authors: item.volumeInfo.authors || ['Unknown author'],
-        categories: item.volumeInfo.categories || ['Uncategorized'],
-        pageCount: item.volumeInfo.pageCount || 0,
-        description: item.volumeInfo.description || 'No description available',
-        image: {
-                smallThumbnail: item.volumeInfo.imageLinks?.smallThumbnail || '',
-                thumbnail: item.volumeInfo.imageLinks?.thumbnail || '',
-        },
-        infoLink: item.volumeInfo.infoLink || '',
+    const books = data.items.map((item) => ({
+      title: item.volumeInfo.title || "No title",
+      authors: item.volumeInfo.authors || ["Unknown author"],
+      categories: item.volumeInfo.categories || ["Uncategorized"],
+      pageCount: item.volumeInfo.pageCount || 0,
+      description: item.volumeInfo.description || "No description available",
+      image: {
+        smallThumbnail: item.volumeInfo.imageLinks?.smallThumbnail || "",
+        thumbnail: item.volumeInfo.imageLinks?.thumbnail || "",
+      },
+      infoLink: item.volumeInfo.infoLink || "",
     }));
 
-    
     return {
       books,
     };
@@ -64,35 +60,40 @@ const searchBookApi = tool({
 });
 
 const getUserBooks = tool({
-  name: 'get_user_books',
-  description: 'Fetch all books the user has reviewed from the Supabase database.',
-  parameters: z.object({}), // No input needed
+  name: "get_user_books",
+  description:
+    "Fetch all books the user has reviewed from the Supabase database.",
+  parameters: z.object({}), 
   async execute() {
-    console.log('Fetching user books from database');
+    console.log("Fetching user books from database");
     const books = await fetchAllBooksFromDatabase();
     if (!books || books.length === 0) {
       return {
         books: [],
       };
     }
-    console.log('Fetched books:', books.length);
-   
+    console.log("Fetched books:", books.length);
+
     return {
-      books
+      books,
     };
   },
 });
 
 export const agent = new Agent({
-  name: 'Book Assistant',
+  name: "Book Assistant",
   instructions: `
   You are a helpful book assistant. 
-  When a user asks for book recommendations, first call the "search_book_api" tool to find books.
-  Then using those books to generate a helpful summary.
-  Finally, return both the books and the summary.
+  First, call "get_user_books" to get all books the user has reviewed.
+  Analyze their titles, reviews, and categories.
+  Then create a search query based on the user's favorite genres, topics, or styles.
+  Call "search_book_api" using that query.
+  Then generate a helpful summary of the recommended books.
+  Return both the list and a concise summary.
+  Only return top 3 books based on the user's preferences and previous reviews.
  `,
-  model: 'o4-mini',
+  model: "o4-mini",
   outputType: BooksResponse,
   tools: [searchBookApi, getUserBooks],
-
+  maxIterations: 1,
 });

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import e from "express";
+
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ export async function generateLLMInterpretation(inputBook, similarBook) {
     Title: ${similarBook.title}
     Description: ${similarBook.description}
 
-    Based on their descriptions, analyze how these books relate. Mention shared themes or differences in tone or content. Be concise and insightful.
+    Based on their descriptions, analyze how these books relate. Mention shared themes or differences in tone or content. Be concise and insightful. Answer in Swedish.
     `;
 
   const completion = await openai.chat.completions.create({
@@ -41,31 +41,3 @@ export async function generateLLMInterpretation(inputBook, similarBook) {
   return completion.choices[0].message.content;
 }
 
-export async function generateSummaryOfBooks(books) {
-    if (!books || books.length === 0) {
-        return "No books available to summarize.";
-    }
-    console.log("gen summary of books", books.length);
-    const systemPrompt = `You are a book summarizer. Your task is to provide a concise summary of the following books, highlighting their main themes, genres, and unique features.`;
-    const userPrompt = books.map((book, index) => `
-        Book ${index + 1}:
-        Title: ${book.title}
-        Authors: ${book.authors.join(", ")}
-        Categories: ${book.categories.join(", ")}
-        Description: ${book.description}
-    `).join("\n\n");
-    const completion = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-            {
-                role: "system",
-                content: systemPrompt,
-            },
-            {
-                role: "user",
-                content: userPrompt,
-            },
-        ],
-    });
-    return completion.choices[0].message.content;
-}

@@ -3,7 +3,7 @@ import path from "path";
 import cors from "cors";
 import { fileURLToPath } from "url";
 import { generateEmbedding } from "./helpers/generate-embeddings.js";
-import { fetchAllBooksWithEmbeddings, storeBookReview } from "./helpers/supabase.js";
+import { fetchAllBooksFromDatabase, fetchAllBooksWithEmbeddings, storeBookReview, updateBookReview } from "./helpers/supabase.js";
 import { getTopSimilarBooks } from "./helpers/calculations.js";
 import { generateLLMInterpretation } from "./helpers/llm.js";
 import { run } from '@openai/agents';
@@ -44,6 +44,32 @@ app.post("/addReview", async (req, res) => {
   }
 });
 
+app.post("/updateReview", async (req, res) => {
+  const { id, review, rating } = req.body;
+
+  console.log('updateReview', id)
+
+  if (!id || !review || !review.trim()) {
+    return res.status(400).json({ error: "Book ID and review are required" });
+  }
+
+  try {
+    const review_embedding = await generateEmbedding(review);
+
+    await updateBookReview(id, {
+      review,
+      rating,
+      review_embedding,
+    });
+
+    res.json({ ok: true });
+    console.log('Review updated');
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Failed to update review." });
+  }
+});
+
 app.post("/compareBook", async (req, res) => {
   const { book } = req.body;
 
@@ -78,21 +104,30 @@ app.post("/findNewBook", async (req, res) => {
   
   try {
 
-    // Step 1: Get all user book reviews from superbase
-    // Step 2: LLM Generate a profile based on users review
-    // Step 3: LLM search on google book api based on what user would like
-    // Step 4: Retrives 3 books with explanintion why user would like the book
-
     const result = await run(
     agent,
-    'Get users book reviews and find new books based on their preferences.',
+    'Get users book reviews and find new books based on their previous books.',
     )
 
     //add llm interpretation of the books
+    //and attach to response summar: ....
 
-    const output = result.finalOutput; // this contains your { books: [...] }
+    const output = result.finalOutput; 
 
     res.json(output);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Agent run failed.' });
+  }
+});
+
+app.get("/myBooks", async (req, res) => {
+  
+  try {
+
+    const result = await fetchAllBooksFromDatabase();
+
+    res.json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Agent run failed.' });

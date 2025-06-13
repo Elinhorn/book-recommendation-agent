@@ -56,14 +56,16 @@ export function BookCard({
         >
           Recensera
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full mt-2"
-          onClick={onCompareClick}
-        >
-          Passar denna mig?
-        </Button>
+        {onCompareClick && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full mt-2"
+            onClick={onCompareClick}
+          >
+            Passar denna mig?
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
