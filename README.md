@@ -34,9 +34,11 @@ Follow these steps to set up and run the application locally.
 - OpenAI API Key
 - Google Books API Key (optional, but recommended for the agent)
 
-1. Clone repo
-2. Create a .env file _(see example in repo)_
-3. Supabase Configuration
+##### 1. Clone repo
+
+##### 2. Create a .env file _(see example in repo)_
+
+##### 3. Supabase Configuration
 
 - Log in to your Supabase account.
 
@@ -83,3 +85,31 @@ create table book_reviews (
   created_at timestamp default now()
 );
 ```
+
+##### 4. Install Dependencies
+
+Navigate to the project root and install the dependencies for both the backend and frontend.
+
+```
+npm i
+```
+
+##### 5. Run the Application
+
+You are going to need 2 terminals for running this project, one for the frontend and the second for the backend.
+To start the server and client you run:
+
+```
+npm run dev
+```
+
+#### Code Structure
+
+`server.js:` The main server file, defining API endpoints and orchestrating AI functionalities.
+`helpers/:` Directory containing helper modules for:
+`generate-embeddings.js:` Handles text embedding generation.
+`supabase.js:` Interacts with the Supabase database for CRUD operations.
+`calculations.js:` Contains logic for cosine similarity and semantic search.
+`llm.js:` Functions for LLM-based book comparisons.
+`agent.js:` Defines the AI agent and its integrated tools.
+`client/:` The source code for the frontend application.
