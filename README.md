@@ -62,3 +62,24 @@ Follow these steps to set up and run the application locally.
   | created_at            | timestamptz  | Default: now()                           |
 
 - Enable the pgvector extension in your Supabase database.
+
+```
+create extension if not exists vector;
+
+create table book_reviews (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  authors text[] not null,
+  categories text[] not null,
+  page_count integer,
+  description text,
+  description_embedding vector(1536),
+  image_small_thumbnail text,
+  image_thumbnail text,
+  info_link text,
+  rating integer,
+  review text,
+  review_embedding vector(1536), -- OpenAI embeddings
+  created_at timestamp default now()
+);
+```
