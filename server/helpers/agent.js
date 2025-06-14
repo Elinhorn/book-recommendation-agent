@@ -22,6 +22,7 @@ const BooksResponse = z.object({
   summary: z.string(),
 });
 
+// This tool searches the Google Books API for books based on a query created from the user's previous reviews and preferences.
 const searchBookApi = tool({
   name: "search_book_api",
   description: "Search Google Books API by query.",

@@ -17,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //????
 
+// add user book review to database/supabase with embeddings of review description
 app.post("/addReview", async (req, res) => {
   const { book, review, rating } = req.body;
 
@@ -44,6 +45,7 @@ app.post("/addReview", async (req, res) => {
   }
 });
 
+// update user book review in database/supabase with embeddings of review
 app.post("/updateReview", async (req, res) => {
   const { id, review, rating } = req.body;
 
@@ -70,6 +72,8 @@ app.post("/updateReview", async (req, res) => {
   }
 });
 
+// generate embedding for book description and compare with existing books in database/supabase
+// return top 3 similar books, send most similar book to LLM for interpretation and frontend display
 app.post("/compareBook", async (req, res) => {
   const { book } = req.body;
 
@@ -86,8 +90,6 @@ app.post("/compareBook", async (req, res) => {
     console.log('new book: ', book)
     console.log('new book: ', topMatches)
 
-    //could add review for my book
-    //if books are not similar, maybe search for other book!?
     const llmComparison = await generateLLMInterpretation(book, topMatches[0])
 
     res.json({
@@ -100,6 +102,8 @@ app.post("/compareBook", async (req, res) => {
   }
 });
 
+// calls AI agent to find new books based on users stored book reviews
+// returns a list of recommended books and short summary for each book
 app.post("/findNewBook", async (req, res) => {
   
   try {
@@ -108,9 +112,6 @@ app.post("/findNewBook", async (req, res) => {
     agent,
     'Get users book reviews and find new books based on their previous books.',
     )
-
-    //add llm interpretation of the books
-    //and attach to response summar: ....
 
     const output = result.finalOutput; 
 
@@ -121,6 +122,7 @@ app.post("/findNewBook", async (req, res) => {
   }
 });
 
+// fetch all user books from database/supabase
 app.get("/myBooks", async (req, res) => {
   
   try {

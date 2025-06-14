@@ -8,6 +8,7 @@ const openai = new OpenAI({
 });
 
 //TODO: change embeddings model
+//Generate embeddings for a given text input to enable semantic search and similarity matching.
 export async function generateEmbedding(textInput) {
   const embedding = await openai.embeddings.create({
     model: "text-embedding-ada-002",
