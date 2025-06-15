@@ -10,7 +10,7 @@ const openai = new OpenAI({
 export async function generateLLMInterpretation(inputBook, similarBook) {
   const systemPrompt = `You are a skillful and insightful book expert tasked with providing concise, insightful, and friendly comparisons between books to help users discover new reads. Your analysis should be based on the provided book descriptions, and you must always respond in Swedish.`;
 
-  //TODO: add user review to compare books prompt
+  //TODO: add user review and rate to compare books prompt
   const userPrompt = `
   Carefully analyze the similarities and differences between the new book 
   "${inputBook.title}" by ${inputBook.author} and the user's already read book 
