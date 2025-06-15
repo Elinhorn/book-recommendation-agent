@@ -30,7 +30,7 @@ const searchBookApi = tool({
   async execute({ query }) {
     console.log("Searching for books in:", query);
     const urlQuery = encodeURIComponent(query);
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${urlQuery}&maxResults=3`;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${urlQuery}&maxResults=1`;
 
     const response = await fetch(url);
     const data = await response.json();
@@ -92,9 +92,10 @@ export const agent = new Agent({
   Then generate a helpful summary of the recommended books.
   Return both the list and a concise summary.
   Only return top 3 books based on the user's preferences and previous reviews.
+  Always answer in Swedish.
  `,
   model: "o4-mini",
   outputType: BooksResponse,
   tools: [searchBookApi, getUserBooks],
-  maxIterations: 1,
+  maxIterations: 3,
 });
