@@ -15,7 +15,7 @@ This project implements an AI-driven web application for personalized book recom
 - **Frontend:** React, TypeScript, Tailwind CSS, Shadcn/ui
 - **Database:** Supabase (PostgreSQL with pgvector for embeddings)
 - **AI/ML:**
-  - OpenAI API (Embeddings: text-embedding-ada-002)
+  - OpenAI API (Embeddings: text-embedding-3-small)
   - OpenAI API (LLMs: gpt-4 for comparisons, o4-mini for agents)
   - OpenAI Agents Library (@openai/agents)
 - **External APIs:** Google Books API
