@@ -11,9 +11,11 @@ const openai = new OpenAI({
 //Generate embeddings for a given text input to enable semantic search and similarity matching.
 export async function generateEmbedding(textInput) {
   const embedding = await openai.embeddings.create({
-    model: "text-embedding-ada-002",
+    //model: "text-embedding-ada-002",
+    model: "text-embedding-3-small",
     input: textInput,
     encoding_format: "float",
+    dimensions: 256,
   });
     //console.log(embedding.data[0].embedding)
   return embedding.data[0].embedding;
