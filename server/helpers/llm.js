@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 
 const openai = new OpenAI({
@@ -9,20 +8,26 @@ const openai = new OpenAI({
 });
 
 export async function generateLLMInterpretation(inputBook, similarBook) {
-  const systemPrompt = `You're a literary expert comparing book descriptions. Your job is to explain how two books are similar or different in terms of genre, theme, tone, and target audience.`;
+  const systemPrompt = `You are a skillful and insightful book expert tasked with providing concise, insightful, and friendly comparisons between books to help users discover new reads. Your analysis should be based on the provided book descriptions, and you must always respond in Swedish.`;
 
   //TODO: add user review to compare books prompt
   const userPrompt = `
-    Book 1:
-    Title: ${inputBook.title}
-    Description: ${inputBook.description}
+  Carefully analyze the similarities and differences between the new book 
+  "${inputBook.title}" by ${inputBook.author} and the user's already read book 
+  "${similarBook.title}" by ${similarBook.author}.
+  Both books have the following descriptions:
+  New book: "${inputBook.description}"
+  User's read book: "${similarBook.description}"
+  
 
-    Book 2:
-    Title: ${similarBook.title}
-    Description: ${similarBook.description}
+  Based on this information, write a short and concise text (max 3-4 sentences) explaining:
+  What the most important similarities are between these two books (e.g., genre, themes, style, type of characters).
+  Why the new book 
+  "${inputBook.title}" is likely to suit (or not suit) the user, considering the user's positive experience with 
+  "${similarBook.title}" and their similarity score.
 
-    Based on their descriptions, analyze how these books relate. Mention shared themes or differences in tone or content. Be concise and insightful. Answer in Swedish.
-    `;
+  **Always respond in Swedish.**`;
+
 
   const completion = await openai.chat.completions.create({
     model: "gpt-4",
@@ -40,4 +45,3 @@ export async function generateLLMInterpretation(inputBook, similarBook) {
 
   return completion.choices[0].message.content;
 }
-
