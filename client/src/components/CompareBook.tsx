@@ -39,11 +39,11 @@ export default function CompareBook({
   const [loadingTitle, setLoadingTitle] = useState(loadingMessages[0]);
 
   function describeSimilarity(score: number) {
-    if (score >= 0.9) {
+    if (score >= 0.75) {
       return "Mycket stark matchning";
-    } else if (score >= 0.8) {
+    } else if (score >= 0.65) {
       return "Tydliga likheter";
-    } else if (score >= 0.7) {
+    } else if (score >= 0.5) {
       return "Viss koppling";
     } else {
       return "Inte alls lika";
