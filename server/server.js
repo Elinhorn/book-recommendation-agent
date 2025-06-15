@@ -1,7 +1,5 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
-import { fileURLToPath } from "url";
 import { generateEmbedding } from "./helpers/generate-embeddings.js";
 import { fetchAllBooksFromDatabase, fetchAllBooksWithEmbeddings, storeBookReview, updateBookReview } from "./helpers/supabase.js";
 import { getTopSimilarBooks } from "./helpers/calculations.js";
@@ -9,13 +7,12 @@ import { generateLLMInterpretation } from "./helpers/llm.js";
 import { run } from '@openai/agents';
 import { agent } from "./helpers/agent.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); //????
+app.use(express.urlencoded({ extended: true }));
 
 // add user book review to database/supabase with embeddings of review description
 app.post("/addReview", async (req, res) => {
@@ -90,7 +87,7 @@ app.post("/compareBook", async (req, res) => {
     console.log('new book: ', book)
     console.log('new book: ', topMatches)
 
-    const llmComparison = await generateLLMInterpretation(book, topMatches[0])
+    const llmComparison = await generateLLMInterpretation(book, topMatches[0]);
 
     res.json({
         match: topMatches[0],
@@ -110,7 +107,7 @@ app.post("/findNewBook", async (req, res) => {
 
     const result = await run(
     agent,
-    'Get users book reviews and find new books based on their previous books.',
+    'Get users book reviews and find new books based on their previous books. Always answer in Swedish.',
     )
 
     const output = result.finalOutput; 
