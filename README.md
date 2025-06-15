@@ -44,22 +44,22 @@ Follow these steps to set up and run the application locally.
 
 - Configure the table schema with the following columns:
 
-  | Column                | Type         | Description                              |
-  | :-------------------- | :----------- | :--------------------------------------- |
-  | id                    | uuid         | Primary key, default: uuid_generate_v4() |
-  | title                 | text         | Book title                               |
-  | authors               | jsonb        | Authors (array of strings)               |
-  | categories            | jsonb        | Categories (array of strings)            |
-  | page_count            | int4         | Number of pages                          |
-  | description           | text         | Book description                         |
-  | description_embedding | vector(1536) | Embedding of the book's description      |
-  | image_small_thumbnail | text         | URL for small cover thumbnail            |
-  | image_thumbnail       | text         | URL for large cover thumbnail            |
-  | info_link             | text         | Link to book information                 |
-  | rating                | int4         | User's rating (1-5)                      |
-  | review                | text         | User's review text                       |
-  | review_embedding      | vector(1536) | Embedding of the user's review           |
-  | created_at            | timestamptz  | Default: now()                           |
+  | Column                | Type        | Description                              |
+  | :-------------------- | :---------- | :--------------------------------------- |
+  | id                    | uuid        | Primary key, default: uuid_generate_v4() |
+  | title                 | text        | Book title                               |
+  | authors               | jsonb       | Authors (array of strings)               |
+  | categories            | jsonb       | Categories (array of strings)            |
+  | page_count            | int4        | Number of pages                          |
+  | description           | text        | Book description                         |
+  | description_embedding | vector(256) | Embedding of the book's description      |
+  | image_small_thumbnail | text        | URL for small cover thumbnail            |
+  | image_thumbnail       | text        | URL for large cover thumbnail            |
+  | info_link             | text        | Link to book information                 |
+  | rating                | int4        | User's rating (1-5)                      |
+  | review                | text        | User's review text                       |
+  | review_embedding      | vector(256) | Embedding of the user's review           |
+  | created_at            | timestamptz | Default: now()                           |
 
 - Enable the pgvector extension in your Supabase database.
 
@@ -73,13 +73,13 @@ create table book_reviews (
   categories text[] not null,
   page_count integer,
   description text,
-  description_embedding vector(1536),
+  description_embedding vector(256),
   image_small_thumbnail text,
   image_thumbnail text,
   info_link text,
   rating integer,
   review text,
-  review_embedding vector(1536), -- OpenAI embeddings
+  review_embedding vector(256), -- OpenAI embeddings
   created_at timestamp default now()
 );
 ```
