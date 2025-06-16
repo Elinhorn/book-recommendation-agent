@@ -71,8 +71,6 @@ export async function fetchAllBooksWithEmbeddings() {
 
 export async function fetchAllBooksFromDatabase() {
   const { data, error } = await supabase
-    /*     .from("book_reviews")
-    .select("id, title, authors, description, page_count, categories, image_small_thumbnail, image_thumbnail, info_link, review, rating"); */
     .from("book_reviews")
     .select(
       "title, authors, description, categories, image_thumbnail, review, rating"
