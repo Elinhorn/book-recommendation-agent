@@ -30,7 +30,7 @@ const searchBookApi = tool({
   async execute({ query }) {
     console.log("Searching for books in:", query);
     const urlQuery = encodeURIComponent(query);
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${urlQuery}&maxResults=1`;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${urlQuery}&maxResults=3`;
 
     const response = await fetch(url);
     const data = await response.json();
