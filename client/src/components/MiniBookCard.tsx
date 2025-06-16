@@ -1,5 +1,4 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import type { Book } from "@/types/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface MiniBookCardProps {
   image: string;
