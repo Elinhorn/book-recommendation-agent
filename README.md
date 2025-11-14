@@ -16,7 +16,6 @@ An AI-driven web application for personalized book recommendations using embeddi
 **Backend:** Node.js, Express.js, Supabase, OpenAI API, LangChain  
 **Frontend:** React, TypeScript, Vite, Tailwind CSS, Shadcn/ui  
 **AI:** OpenAI Agents, embeddings, GPT-4o-mini
-
 **External APIs:** Google Books API
 
 ## ⚡ Quick Start
