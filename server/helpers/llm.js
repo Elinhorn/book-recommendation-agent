@@ -7,41 +7,35 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function generateLLMInterpretation(inputBook, similarBook) {
-  const systemPrompt = `You are a skillful and insightful book expert tasked with providing concise, insightful, and friendly comparisons between books to help users discover new reads. Your analysis should be based on the provided book descriptions, and you must always respond in Swedish.`;
+// generate book comparison analysis using OpenAI Responses API
+export async function generateLLMInterpretation(book, similarBook) {
+  try {
+    const response = await openai.responses.create({
+      model: "gpt-4o-mini",
+      input: [
+        {
+          role: "system",
+          content: `Du är en kunnig och insiktsfull litteraturexpert som hjälper läsare att upptäcka nya böcker. 
+          Du skriver alltid på svenska och med en vänlig, engagerande och tydlig ton. 
+          När du jämför böcker ska du fokusera på: berättelsens stil och ton, centrala teman och känslor, målgrupp och läsupplevelse. 
+          Svara kortfattat (högst 5–6 meningar) och ge alltid en naturlig och lättläst motivering till varför den nya boken kan passa, eller inte passa användaren.
+          Undvik tekniskt språk och skriv på ett sätt som väcker läslust.`,
+        },
+        {
+          role: "user",
+          content: `
+            Jämför följande två böcker och förklara varför de passar samma typ av läsare.
+            Fokusera på teman, ton, språk och målgrupp. Håll dit till mellan 5-6 meningar.
+            Ny bok: ${book.title} - ${book.description}
+            Lik bok: ${similarBook.title} - ${similarBook.description}
+          `,
+        },
+      ],
+    });
 
-  //TODO: add user review and rate to compare books prompt
-  const userPrompt = `
-  Carefully analyze the similarities and differences between the new book 
-  "${inputBook.title}" by ${inputBook.author} and the user's already read book 
-  "${similarBook.title}" by ${similarBook.author}.
-  Both books have the following descriptions:
-  New book: "${inputBook.description}"
-  User's read book: "${similarBook.description}"
-  
-
-  Based on this information, write a short and concise text (max 3-4 sentences) explaining:
-  What the most important similarities are between these two books (e.g., genre, themes, style, type of characters).
-  Why the new book 
-  "${inputBook.title}" is likely to suit (or not suit) the user, considering the user's positive experience with 
-  "${similarBook.title}" and their similarity score.
-
-  **Always respond in Swedish.**`;
-
-
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
-  });
-
-  return completion.choices[0].message.content;
+    return response.output_text;
+  } catch (err) {
+    console.error("Responses API error:", err);
+    return "Kunde inte generera jämförelse för tillfället.";
+  }
 }

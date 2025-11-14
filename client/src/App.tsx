@@ -19,6 +19,13 @@ export default function App() {
               </Button>
             )}
           </NavLink>
+          <NavLink to="notreadbooks">
+            {({ isActive }) => (
+              <Button variant={isActive ? "default" : "outline"}>
+                Vill Läsa
+              </Button>
+            )}
+          </NavLink>
         </nav>
       </header>
       <Outlet />

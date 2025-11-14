@@ -60,6 +60,7 @@ const searchBookApi = tool({
   },
 });
 
+// tool to fetches all user's reviewed books from database
 const getUserBooks = tool({
   name: "get_user_books",
   description:
@@ -73,7 +74,6 @@ const getUserBooks = tool({
         books: [],
       };
     }
-    console.log("Fetched books:", books.length);
 
     return {
       books,
@@ -81,21 +81,40 @@ const getUserBooks = tool({
   },
 });
 
+// tool to finds books similar to a given title using Google Books search
+const recommendSimilarBooks = tool({
+  name: "recommend_similar_books",
+  description: "Given a book title, find similar books from Google Books using the agent's book search tool.",
+  parameters: z.object({ title: z.string() }),
+  async execute({ title }, agentContext) {
+    console.log("Searching for books similar to:", title);
+
+    const searchResult = await agentContext.runTool("search_book_api", { query: title });
+
+    if (!searchResult || !searchResult.books || searchResult.books.length === 0) {
+      return { books: [] };
+    }
+
+    return { books: searchResult.books.slice(0, 3) };
+  },
+});
+
+
+// uses user reading profile to generate personalized book suggestions via Google Books API
 export const agent = new Agent({
   name: "Book Assistant",
   instructions: `
-  You are a helpful book assistant. 
-  First, call "get_user_books" to get all books the user has reviewed.
-  Analyze their titles, reviews, and categories.
-  Then create a search query based on the user's favorite genres, topics, or styles.
-  Call "search_book_api" using that query.
-  Then generate a helpful summary of the recommended books.
-  Return both the list and a concise summary.
-  Only return top 3 books based on the user's preferences and previous reviews.
-  Always answer in Swedish.
+   Du är en hjälpsam bokassistent.
+    Du får användarens bokprofil som input:
+    Titel: {userProfile.title}
+    Sammanfattning: {userProfile.summary}
+
+    Skapa en sökfråga för Google Books API baserat på denna profil.
+    Returnera de tre mest relevanta böckerna med korta sammanfattningar.
+    Svara alltid på svenska.
  `,
   model: "o4-mini",
   outputType: BooksResponse,
-  tools: [searchBookApi, getUserBooks],
+  tools: [searchBookApi, getUserBooks, recommendSimilarBooks],
   maxIterations: 3,
 });
