@@ -107,10 +107,10 @@ export function BookReviewCard({
               variant={"outline"}
               className="ml-auto mr-5"
             >
-              Cancel
+              Avbryt
             </Button>
             <Button onClick={handleSubmit} className="ml-auto">
-              Submit Review
+              Skicka Recension
             </Button>
           </div>
         </CardFooter>

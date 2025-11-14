@@ -12,6 +12,7 @@ export type Book = {
   infoLink: string;
   review?: string;
   rating?: number;
+  createdAt?: Date;
 };
 
 export type ComparedBooks = {

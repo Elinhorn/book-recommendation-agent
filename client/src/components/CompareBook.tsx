@@ -85,16 +85,16 @@ export default function CompareBook({
               image={
                 books?.match.image || "https://placehold.co/66x99?text=No+Cover"
               }
-              title={books?.match.title || "Fel bok 1"}
-              authors={books?.match.authors || ["Fel bok 1"]}
+              title={books?.match.title ?? "Fel vid hämtning"}
+              authors={books?.match.authors ?? ["Fel vid hämtning"]}
             />
             <MiniBookCard
               image={
                 books?.newBook.image.thumbnail ||
                 "https://placehold.co/66x99?text=No+Cover"
               }
-              title={books?.newBook.title || "Fel bok 2"}
-              authors={books?.newBook.authors || ["Fel bok 2"]}
+              title={books?.newBook.title ?? "Fel vid hämtning"}
+              authors={books?.newBook.authors ?? ["Fel vid hämtning"]}
             />
           </div>
           <div className="grid gap-4">
