@@ -85,10 +85,9 @@ create table not_read_books (
 ## 🔑 Environment Variables
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_KEY=your_supabase_anon_key_here
-PORT=3000
+OPENAI_API_KEY=your_actual_key_here
+SUPABASE_URL=your_actual_url_here
+SUPABASE_ANON=your_actual_anon_key_here
 ```
 
 ## 📁 Project Structure
